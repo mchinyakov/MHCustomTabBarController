@@ -52,9 +52,10 @@
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
    
+    [super prepareForSegue:segue sender:sender];
+
     if ([segue isKindOfClass:[MHTabBarSegue class]] == NO)
     {
-        [super prepareForSegue:segue sender:sender];
         return;
     }
     
