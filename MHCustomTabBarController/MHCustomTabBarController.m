@@ -24,6 +24,12 @@
 
 #import "MHTabBarSegue.h"
 
+@interface MHCustomTabBarController ()
+
+@property (nonatomic, copy) NSString * firstTabbarSegueName;
+
+@end
+
 @implementation MHCustomTabBarController {
     NSMutableDictionary *_viewControllersByIdentifier;
 }
@@ -36,9 +42,15 @@
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
+    NSString * segueName = @"viewController1";
+    if (self.firstTabbarSegueName != nil)
+    {
+        segueName = self.firstTabbarSegueName;
+    }
     
     if (self.childViewControllers.count < 1) {
-        [self performSegueWithIdentifier:@"viewController1" sender:[self.buttons objectAtIndex:0]];
+        [self performSegueWithIdentifier:segueName sender:[self.buttons objectAtIndex:0]];
     }
 }
 
