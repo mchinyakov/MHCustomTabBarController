@@ -24,9 +24,11 @@
 
 #import "MHTabBarSegue.h"
 
+
 @interface MHCustomTabBarController ()
 
 @property (nonatomic, copy) NSString * firstTabbarSegueName;
+@property (nonatomic, readwrite) NSNumber * tagOfFirstButtons;
 
 @end
 
@@ -36,22 +38,45 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     _viewControllersByIdentifier = [NSMutableDictionary dictionary];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
+    NSString *segueName = [self firstSegueName];
+    id firstSender = [self firstSender];
+
+    if (self.childViewControllers.count < 1) {
+        [self performSegueWithIdentifier:segueName sender:firstSender];
+    }
+}
+
+- (id)firstSender
+{
+    NSInteger tag = self.tagOfFirstButtons.integerValue;
+
+    for (UIButton *button in self.buttons)
+    {
+        if (button.tag == tag)
+        {
+            return button;
+        }
+    }
+    return self.buttons.count > 0
+           ? self.buttons[0]
+           : nil;
+}
+
+- (NSString *)firstSegueName
+{
     NSString * segueName = @"viewController1";
-    if (self.firstTabbarSegueName != nil)
+    if (self.firstTabbarSegueName != nil && self.firstTabbarSegueName.length > 0)
     {
         segueName = self.firstTabbarSegueName;
     }
-    
-    if (self.childViewControllers.count < 1) {
-        [self performSegueWithIdentifier:segueName sender:[self.buttons objectAtIndex:0]];
-    }
+    return segueName;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -63,31 +88,31 @@
 #pragma mark - Segue
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-   
+
     [super prepareForSegue:segue sender:sender];
 
     if ([segue isKindOfClass:[MHTabBarSegue class]] == NO)
     {
         return;
     }
-    
+
     self.oldViewController = self.destinationViewController;
-    
+
     //if view controller isn't already contained in the viewControllers-Dictionary
     if (![_viewControllersByIdentifier objectForKey:segue.identifier]) {
         [_viewControllersByIdentifier setObject:segue.destinationViewController forKey:segue.identifier];
     }
-    
+
     for (UIButton *aButton in self.buttons) {
         [aButton setSelected:NO];
     }
-        
+
     UIButton *button = (UIButton *)sender;
     [button setSelected:YES];
     self.destinationIdentifier = segue.identifier;
     self.destinationViewController = [_viewControllersByIdentifier objectForKey:self.destinationIdentifier];
 
-    
+
 }
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
@@ -95,7 +120,7 @@
         //Dont perform segue, if visible ViewController is already the destination ViewController
         return NO;
     }
-    
+
     return YES;
 }
 
